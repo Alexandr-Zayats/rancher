@@ -1,8 +1,4 @@
-version: '2'
-
-services: 
-
-  web:
+web:
     image: zayats/wordpress:latest
     volumes:
         - /data/wordpress/${DOMAIN}:/var/www/html
