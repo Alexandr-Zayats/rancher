@@ -1,0 +1,10 @@
+.catalog:
+  name: "Magento 2"
+  version: "0.0.1"
+  description: "Magento 2"
+  questions:
+    - variable: DOMAIN
+      label: "Domain"
+      type: "string"
+      required: true
+      default: "localhost"

@@ -1,0 +1,10 @@
+version: '2'
+
+services:
+  proxy:
+    image: globalgames/3proxy
+    ports:
+     - 3128:3128
+    labels:
+      io.rancher.scheduler.affinity:host_label: proxy=true
+      io.rancher.scheduler.global: 'true'

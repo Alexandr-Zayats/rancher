@@ -1,0 +1,20 @@
+.catalog:
+  name: "PaymentGate"
+  version: "0.0.1"
+  description: "PaymentGate environment"
+  uuid: paymentgate-0.0.1
+  questions:
+    - variable: DOMAIN
+      label: "Domain"
+      type: "string"
+      required: true
+      default: "localhost"
+    - variable: ENV_VAR
+      label: "Application environment variable"
+      type: "enum"
+      options:
+        - prod
+        - dev
+      default: "production"
+      required: true
+

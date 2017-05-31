@@ -1,0 +1,4 @@
+.catalog:
+  name: "Proxy"
+  version: "0.0.1"
+  description: "Proxy environment"

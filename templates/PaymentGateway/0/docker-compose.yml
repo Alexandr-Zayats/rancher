@@ -1,0 +1,39 @@
+version: '2'
+volumes:
+  rabbitmqdata:
+  redisdata:
+  mysqldata:
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    volumes:
+    - rabbitmqdata:/var/lib/rabbitmq
+    labels:
+      traefik.frontend.rule: "Host:${DOMAIN}"
+      traefik.port: '15672'
+  backend:
+      image: globalgames/pgateway_backend:latest
+      stdin_open: true
+      tty: true
+      links:
+      - redis:redis
+      - db:db
+      - gearmand:gearmand
+      - rabbitmq:rabbitmq
+      labels:
+        traefik.frontend.rule: "Host:${DOMAIN}"
+        traefik.port: '80'
+        io.rancher.container.pull_image: always
+  redis:
+    image: redis
+    volumes:
+    - redisdata:/data
+  db:
+    image: mariadb
+    environment:
+      MYSQL_DATABASE: paymentgateway
+      MYSQL_PASSWORD: dev
+      MYSQL_ROOT_PASSWORD: paymentgateway
+      MYSQL_USER: dev
+    volumes:
+    - mysqldata:/var/lib/mysql

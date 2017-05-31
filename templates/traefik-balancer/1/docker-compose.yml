@@ -1,0 +1,47 @@
+version: '2'
+
+services:
+  traefik:
+    image: traefik
+    ports:
+      - 80:80
+      - 8080:8080
+      - 443:443
+    {{- if eq .Values.TRAEFIK_BACKEND "docker" }}
+    volumes:
+        - /var/run/docker.sock:/var/run/docker.sock
+    {{- else }}
+    {{- end }}
+    command:
+        - --web
+        - --logLevel=DEBUG
+        - --${TRAEFIK_BACKEND}
+        - --${TRAEFIK_BACKEND}.watch
+        - --${TRAEFIK_BACKEND}.exposedbydefault=true
+        - --${TRAEFIK_BACKEND}.domain=${DOMAIN}
+    {{- if eq .Values.TRAEFIK_BACKEND "rancher" }}
+        - --rancher.endpoint=${RANCHER_URL}
+        - --rancher.accesskey=${RANCHER_ACCESS_KEY}
+        - --rancher.secretkey=${RANCHER_SECRET_KEY}
+    {{- else }}
+    {{- end }}
+    {{- if eq .Values.acme "true" }}
+        - --acme
+        - --acme.storage=/acme.json
+        - --acme.email=alexandr@zayats.org
+        - --acme.caserver=https://acme-v01.api.letsencrypt.org/directory
+        - --acme.ondemand=true
+        - --acme.entryPoint=https
+    {{- else }}
+    {{- end }}
+    {{- if eq .Values.https "true" }}
+        - --entryPoints=Name:http Address::80 Redirect.EntryPoint:https
+        - --entryPoints=Name:https Address::443 TLS
+        - --defaultentrypoints=http,https
+    {{- else }}
+        - --entryPoints=Name:http Address::80
+        - --entryPoints=Name:https Address::443 TLS
+        - --defaultentrypoints=http,https
+    {{- end }}
+    labels:
+      traefik.domain: "${DOMAIN}"

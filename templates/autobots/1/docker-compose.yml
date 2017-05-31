@@ -1,0 +1,118 @@
+version: '2'
+
+services:
+  redis:
+    image: redis
+    volumes:
+      - redis:/data
+  mongo:
+    image: mongo
+    volumes:
+      - mongo:/data/db
+  queue:
+    image: globalgames/autobots_rabbitmq
+    volumes:
+      - rabbitmq:/var/lib/rabbitmq
+    labels:
+      traefik.port: '15672'
+      traefik.frontend.rule: "Host:rabbit.${DOMAIN}"
+  redisadmin:
+    image: tenstartups/redis-commander
+    command: --redis-host redis
+    links:
+      - redis
+    labels:
+      traefik.port: '8081'
+      traefik.frontend.rule: "Host:redis.${DOMAIN}"
+  mongoadmin:
+    image: mongo-express
+    links:
+      - mongo
+    labels:
+      traefik.port: '8081'
+      traefik.frontend.rule: "Host:mongo.${DOMAIN}"
+  swagger:
+    image: ianneub/swagger-ui
+    environment:
+      - "URL=http://${DOMAIN}/api/swagger"
+    labels:
+      traefik.port: '80'
+      traefik.frontend.rule: "Host:swagger.${DOMAIN}"
+  ws:
+    image: globalgames/autobots
+    depends_on:
+      - redis
+      - queue
+    environment:
+      DOMAIN: "${DOMAIN}"
+      SERVICE: 'ws'
+      NODE_ENV: "${ENV_VAR}"
+      NODE_APP_INSTANCE: 0
+    labels:
+      io.rancher.container.pull_image: always
+  trader:
+    image: globalgames/autobots
+    depends_on:
+      - redis
+      - queue
+      - mongo
+    environment:
+      DOMAIN: "${DOMAIN}"
+      SERVICE: 'trader'
+      NODE_ENV: "${ENV_VAR}"
+      NODE_APP_INSTANCE: 0
+    labels:
+      io.rancher.container.pull_image: always
+  history:
+    image: globalgames/autobots
+    depends_on:
+      - queue
+      - mongo
+    environment:
+      DOMAIN: "${DOMAIN}"
+      SERVICE: 'history'
+      NODE_ENV: "${ENV_VAR}"
+      NODE_APP_INSTANCE: 0
+    labels:
+      io.rancher.container.pull_image: always
+  api:
+    image: globalgames/autobots
+    expose:
+      - 80
+    depends_on:
+      - queue
+      - mongo
+      - redis
+    environment:
+      DOMAIN: "${DOMAIN}"
+      SERVICE: 'api'
+      NODE_ENV: "${ENV_VAR}"
+      NODE_APP_INSTANCE: 0
+    labels:
+      io.rancher.container.pull_image: always
+      traefik.port: '80'
+      traefik.domain: "${DOMAIN}"
+      traefik.frontend.rule: "PathPrefix:/api"
+  notifier:
+    image: globalgames/autobots
+    depends_on:
+      - queue
+    environment:
+      DOMAIN: "${DOMAIN}"
+      SERVICE: 'notifier'
+      NODE_ENV: "${ENV_VAR}"
+      NODE_APP_INSTANCE: 0
+    labels:
+      io.rancher.container.pull_image: always
+  admin:
+    image: globalgames/autobots_admin
+    labels:
+      io.rancher.container.pull_image: always
+      traefik.port: '80'
+      traefik.domain: "${DOMAIN}"
+      traefik.frontend.rule: "PathPrefixStrip:/admin"
+
+volumes:
+  mongo:
+  redis:
+  rabbitmq:

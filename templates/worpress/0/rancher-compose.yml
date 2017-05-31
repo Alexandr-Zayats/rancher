@@ -1,0 +1,32 @@
+.catalog:
+  name: "CS:GO Betting & gambing sites"
+  version: "0.0.1"
+  description: "CS:GO Betting & gambing sites"
+  uuid: csgoservice_catalog-0.0.1
+  questions:
+    - variable: ENV_VAR
+      label: "Application environment variable"
+      type: "enum"
+      options:
+        - production
+        - development
+      default: "development"
+      required: true
+
+web:
+  retain_ip: true
+  health_check:
+    port: 80
+    interval: 5000
+    unhealthy_threshold: 3
+    healthy_threshold: 2
+    response_timeout: 5000
+
+db:
+  retain_ip: true
+  health_check:
+    port: 3306
+    interval: 5000
+    unhealthy_threshold: 3
+    healthy_threshold: 2
+    response_timeout: 5000

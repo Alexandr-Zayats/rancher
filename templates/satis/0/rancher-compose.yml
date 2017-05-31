@@ -1,0 +1,22 @@
+.catalog:
+  name: "Satis"
+  version: "1.0.0"
+  questions:
+    - variable: TR_DOMAIN
+      label: "Traefic Domain"
+      type: "string"
+      required: true
+      default: "localhost"
+    - variable: TR_PORT
+      label: "Traefic port"
+      type: "string"
+      default: "80"
+
+satis:
+  retain_ip: true
+  health_check:
+    port: 80
+    interval: 5000
+    unhealthy_threshold: 3
+    healthy_threshold: 2
+    response_timeout: 5000

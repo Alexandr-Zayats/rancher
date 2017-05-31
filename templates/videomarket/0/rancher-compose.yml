@@ -1,0 +1,11 @@
+.catalog:
+  name: "videomarket"
+  version: "0.0.1"
+  description: "videomarket environment"
+  uuid: videomarket-0.0.1
+  questions:
+    - variable: DOMAIN
+      label: "Domain"
+      type: "string"
+      required: true
+      default: "localhost"

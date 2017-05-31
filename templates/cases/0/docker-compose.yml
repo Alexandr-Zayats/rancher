@@ -1,0 +1,74 @@
+version: '2'
+volumes:
+  casesmysqldata:
+  casesredisdata:
+  casesbox:
+services:
+  mail:
+    image: catatnight/postfix
+    environment:
+      maildomain: csidol.com
+      smtp_user: user:ifBJj82naWuhxYyV
+    ports:
+    - 25:25/tcp
+  userfront:
+    image: globalgames/cases_user_front
+    labels:
+      io.rancher.container.pull_image: always
+      traefik.port: '8000'
+      traefik.domain: "${DOMAIN}"
+      traefik.frontend.rule: "PathPrefix:/"
+      traefik.enable: "true"
+    environment:
+      ENV: "${ENV_VAR}"
+      NODE_ENV: "${ENV_VAR}"
+  backend:
+    image: globalgames/cases_backend:develop
+    environment:
+      ENV: development
+      APP_ENV: development
+    volumes:
+    - casesbox:/var/www/html/public/appfiles/:rw
+    labels:
+      traefik.frontend.rule: PathPrefix:/api, /appfiles, /default
+      traefik.port: '80'
+      traefik.domain: stage.cases.gskins.net
+      traefik.enable: 'true'
+      io.rancher.container.pull_image: always
+      net.globalgames.service.source.repository: git@github.com:suntechsoft/cases-backend-legacy.git
+      net.globalgames.service.dev.dockerfile: .build/dev/Dockerfile
+  autobotsproxy:
+    image: globalgames/cases_autobots_proxy
+    labels:
+      io.rancher.container.pull_image: always
+      traefik.port: '80'
+      traefik.domain: "${DOMAIN}"
+      traefik.frontend.rule: "PathPrefixStrip:/autobots-proxy"
+      traefik.enable: "true"
+      net.globalgames.service.source.repository: git@github.com:suntechsoft/cases-autobots-proxy.git
+      net.globalgames.service.dev.dockerfile: .build/dev/Dockerfile
+  redis:
+    image: redis
+    volumes:
+    - casesredisdata:/data/
+  db:
+    image: globalgames/cases_db
+    environment:
+      MYSQL_DATABASE: cases
+      MYSQL_PASSWORD: dev
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: dev
+    volumes:
+    - casesmysqldata:/var/lib/mysql
+  adminfront:
+    image: globalgames/cases_admin_front
+    environment:
+      ENV: "${ENV_VAR}"
+    labels:
+      io.rancher.container.pull_image: always
+      traefik.port: '80'
+      traefik.domain: "${DOMAIN}"
+      traefik.frontend.rule: "PathPrefixStrip:/admin"
+      traefik.enable: "true"
+      net.globalgames.service.source.repository: git@github.com:suntechsoft/cases-admin-front.git
+      net.globalgames.service.dev.dockerfile: .build/dev/Dockerfile

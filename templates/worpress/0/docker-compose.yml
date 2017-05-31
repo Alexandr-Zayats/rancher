@@ -1,0 +1,34 @@
+version: '2'
+
+volumes:
+  db-${DOMAIN}-${ENV_VAR}:
+  wp-${DOMAIN}-${ENV_VAR}:
+
+services: 
+
+  web:
+    image: zayats/wordpress:latest
+    volumes:
+      - wp-${DOMAIN}-${ENV_VAR}:/var/www/html
+
+    environment:
+      WORDPRESS_DB_PASSWORD: 'OPf_eL5yfErR0d0N'
+    labels:
+      io.rancher.container.pull_image: always
+      traefik.port: '80'
+      traefik.domain:  "csgoroute.com"
+      traefik.frontend.rule: "Host: csgoroute.com"
+      traefik.enable: 'true'
+      traefik.acme: 'true'
+#    depends_on:
+#      - db
+
+#  db:
+#    image: mariadb:latest
+#    labels:
+#       io.rancher.container.pull_image: always
+#    volumes:
+#      - db-csgoroute-${ENV_VAR}:/var/lib/mysql
+
+#    environment:
+#      MYSQL_ROOT_PASSWORD: 'OPf_eL5yfErR0d0N'

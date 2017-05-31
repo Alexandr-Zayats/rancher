@@ -1,0 +1,78 @@
+version: '2'
+
+volumes:
+  redisskinscash:
+  mysqlskinscash:
+
+services:
+  userfront:
+    image: globalgames/skinscash_user_front
+    labels:
+      io.rancher.container.pull_image: always
+      io.rancher.scheduler.global: 'true'
+      net.globalgames.service.source.repository: git@github.com:suntechsoft/skinscash-user-front.git
+    environment:
+      ENV: "${ENV_VAR}"
+      NODE_ENV: "${ENV_VAR}"
+  mail:
+    image: catatnight/postfix
+    environment:
+      maildomain: "${DOMAIN}"
+      smtp_user: info:OUVAW79efqwvy9rev1q4g
+  lb:
+    image: globalgames/skinscash_lb
+    labels:
+      traefik.frontend.rule: "Host:${DOMAIN}"
+      traefik.port: 443
+      io.rancher.container.pull_image: always
+    environment:
+      ENV: "${ENV_VAR}"
+  backend:
+    image: globalgames/skinscash_backend
+    labels:
+      io.rancher.container.pull_image: always
+      net.globalgames.service.source.repository: git@github.com:suntechsoft/skinscash-backend.git
+      net.globalgames.service.dev.dockerfile: .build/dev/Dockerfile
+    environment:
+      ENV: "${ENV_VAR}"
+      APP_ENV: "${ENV_VAR}"
+  crons:
+    image: globalgames/trader_cront_autobuild
+    links:
+      - db:db
+    labels:
+      io.rancher.container.pull_image: always
+      net.globalgames.service.source.repository: git@github.com:suntechsoft/skinscash-admin-front.git
+      net.globalgames.service.dev.dockerfile: .devops/cron/development/Dockerfile
+    environment:
+      ENV: "${ENV_VAR}"
+  db:
+    image: mysql
+    environment:
+      MYSQL_DATABASE: skins_cash
+      MYSQL_PASSWORD: CpNfwCSxAbKzxIe7
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: developer
+    volumes:
+      - mysqlskinscash:/var/lib/mysql
+  redis:
+    image: redis
+    volumes:
+      - redisskinscash:/data/
+  adminfront:
+    image: globalgames/skins_cash
+    environment:
+      COMPOSE_PROJECT_NAME: skinscash
+      TAG: latest
+      ENV: prod
+    links:
+      - backend:backend
+      - mail:mail
+      - crons:crons
+      - db:mysql
+    environment:
+      ENV: "${ENV_VAR}"
+    labels:
+      io.rancher.container.pull_image: always
+      net.globalgames.service.source.repository: git@github.com:suntechsoft/skinscash-admin-front.git
+      net.globalgames.service.dev.dockerfile: .devops/admin-front/development/Dockerfile

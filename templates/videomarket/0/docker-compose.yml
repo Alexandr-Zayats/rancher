@@ -1,0 +1,55 @@
+version: '2'
+volumes:
+  mysqlvideomarket:
+  rabbitmqvideomarket:
+services:
+  nginx:
+    image: registry.gitlab.com/globalgamesdev/videomarket_lb
+    stdin_open: true
+    external_links:
+    - Default/marketing:marketing
+    tty: true
+    links:
+    - api:api
+    ports:
+    - 80:80/tcp
+    labels:
+      io.rancher.container.pull_image: always
+  api:
+    image: globalgames/videomarket_api
+    stdin_open: true
+    tty: true
+    links:
+    - rabbitmq:rabbitmq
+    - db:db
+    ports:
+    - 8081:80/tcp
+    labels:
+      io.rancher.container.pull_image: always
+  rabbitmq:
+    image: rabbitmq:3-management
+    stdin_open: true
+    volumes:
+    - rabbitmqvideomarket:/var/lib/rabbitmq
+    tty: true
+    ports:
+    - 15672:15672/tcp
+    labels:
+      io.rancher.container.pull_image: always
+  db:
+    image: percona
+    environment:
+      MYSQL_ROOT_PASSWORD: f@4fg5Wepv&[
+      MYSQL_DATABASE: videomarket
+      MYSQL_USER: vm
+      MYSQL_PASSWORD: wOaACGFL2eB{_6
+    stdin_open: true
+    volumes:
+    - mysqlvideomarket:/var/lib/mysql
+    tty: true
+    labels:
+      io.rancher.container.pull_image: always
+  marketing:
+    image: registry.gitlab.com/globalgamesdev/videomarket_marketing
+    labels:
+      io.rancher.container.pull_image: always
