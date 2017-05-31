@@ -1,0 +1,28 @@
+version: '2'
+
+services: 
+
+    db:
+        image: mariadb:latest
+        volumes:
+            - /var/lib/mysql:/var/lib/mysql
+        environment:
+            MYSQL_ROOT_PASSWORD: "comcbidz"
+
+    myadmin:
+        image: phpmyadmin/phpmyadmin
+        stdin_open: true
+        tty: true
+        links:
+            - db_1
+        labels:
+#            traefik.backend: "myadmin"
+            traefik.frontend.rule: "Host:myadmin.zayats.org"
+            traefik.port: '80'
+        networks:
+            - web
+
+networks:
+    web:
+        external: 
+            name: traefik_webgateway
