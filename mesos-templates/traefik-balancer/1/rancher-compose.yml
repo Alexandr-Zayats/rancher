@@ -1,0 +1,45 @@
+.catalog:
+  name: "Traefik Balancer"
+  version: "0.0.2"
+  description: "Traefik environment"
+  questions:
+    - variable: DOMAIN
+      label: "Domain"
+      type: "string"
+      required: true
+      default: "localhost"
+    - variable: https
+      label: http redirect to https?
+      required: true
+      default: true
+      type: boolean
+    - variable: acme
+      label: enable https?
+      required: true
+      default: true
+      type: boolean
+    - variable: RANCHER_URL
+      label: "Rancher URL"
+      type: "string"
+      default: "http://rancher.gskins.net:8080"
+    - variable: RANCHER_ACCESS_KEY
+      label: "Rancher environment access key"
+      type: "string"
+    - variable: RANCHER_SECRET_KEY
+      label: "Rancher environment secret key"
+      type: "string"
+    - variable: TRAEFIK_BACKEND
+      label: "Traefik backend variable"
+      type: "enum"
+      options:
+        - docker
+        - rancher
+
+traefik:
+  retain_ip: true
+  health_check:
+    port: 80
+    interval: 5000
+    unhealthy_threshold: 3
+    healthy_threshold: 2
+    response_timeout: 5000

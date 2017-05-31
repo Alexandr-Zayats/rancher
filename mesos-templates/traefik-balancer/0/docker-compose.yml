@@ -1,0 +1,30 @@
+version: '2'
+
+services:
+  traefik:
+    image: traefik
+    ports:
+      - 80:80
+      - 8080:8080
+      - 443:443
+    command:
+        - --web
+        - --logLevel=DEBUG
+        - --${TRAEFIK_BACKEND}
+        - --${TRAEFIK_BACKEND}.watch
+        - --${TRAEFIK_BACKEND}.exposedbydefault=false
+        - --${TRAEFIK_BACKEND}.domain=${DOMAIN}
+        - --rancher.endpoint=${RANCHER_URL}
+        - --rancher.accesskey=${RANCHER_ACCESS_KEY}
+        - --rancher.secretkey=${RANCHER_SECRET_KEY}
+        - --acme
+        - --acme.storage=/acme.json
+        - --acme.email=dev@globalgames.net
+        - --acme.caserver=https://acme-v01.api.letsencrypt.org/directory
+        - --acme.ondemand=true
+        - --acme.entryPoint=https
+        - --entryPoints=Name:http Address::80 Redirect.EntryPoint:https
+        - --entryPoints=Name:https Address::443 TLS
+        - --defaultentrypoints=http,https
+    labels:
+      traefik.domain: "${DOMAIN}"
