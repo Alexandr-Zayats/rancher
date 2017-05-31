@@ -1,0 +1,1 @@
+59  23  *   *   *   root /usr/local/bin/php /var/www/drakeroll.com/bin/console game:hash:close

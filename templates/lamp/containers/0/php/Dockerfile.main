@@ -1,0 +1,32 @@
+FROM globalgames/base.service.drakeroll:1.0.0
+
+MAINTAINER Maksym Churkin <m.churkyn@globalgames.net>
+
+RUN if ! $DEBUG; then echo 'opcache.validate_timestamps=0' >> /usr/local/etc/php/conf.d/docker-php-ext-opcache.ini; fi
+
+# Copy the project
+COPY . /var/www/drakeroll.com
+
+# Clear cache and logs dirs
+RUN rm -rf /var/www/drakeroll.com/var/cache/* && \
+    rm -rf /var/www/drakeroll.com/var/logs/*
+
+# Run Composer install
+RUN mkdir -p /var/www/drakeroll.com/vendor && \
+    cd /var/www/drakeroll.com && \
+    composer install --no-suggest --no-progress 2>&1
+
+# Supervisor base configuration
+ADD supervisor.conf /etc/supervisor/conf.d/supervisor.conf
+
+#Add crontab
+ADD crontab /etc/cron.d/rolls
+
+# Swich workdir
+WORKDIR /var/www/drakeroll.com
+
+# Add entrypoint
+ADD start.sh .
+RUN chmod +x start.sh
+
+CMD ["/bin/bash", "/var/www/drakeroll.com/start.sh"]

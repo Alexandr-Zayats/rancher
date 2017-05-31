@@ -1,0 +1,21 @@
+version: '2'
+
+services:
+    php:
+        image: zayats/php
+        volumes:
+            - "/data/web/${DOMAIN}:/var/www/html"
+        environment:
+            MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD}"
+            MYSQL_DATABASE: "${MYSQL_DATABASE}"
+            MYSQL_USER: "${MYSQL_USER}"
+            MYSQL_PASSWORD: "${MYSQL_PASSWORD}"
+            MYSQL_HOST: "${MYSQL_HOST}"
+            ContainerType: "service"
+
+    nginx:
+        image: zayats/nginx
+        volumes:
+            - "/data/web/${DOMAIN}:/var/www/html"
+        links:
+            - php

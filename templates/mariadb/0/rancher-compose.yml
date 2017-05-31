@@ -1,0 +1,26 @@
+.catalog:
+  name: "Maria DB"
+  version: 1.0
+  description: |
+    Maria DB
+  questions:
+    - variable: "mysql_root_password"
+      type: string
+      required: true
+      label: "MySQL Root Password"
+      description: "Password given to the root mysql user"
+    - variable: "mysql_database"
+      type: string
+      required: true
+      label: "MySQL Database Name"
+      description: "MySQL database to create"
+    - variable: "mysql_user"
+      type: string
+      required: true
+      description: "MySQL user for the created database"
+      label: "MySQL DB User"
+    - variable: "mysql_password"
+      type: string
+      required: true
+      label: "MySQL DB Password"
+      description: "Password for the MySQL user of the created database"

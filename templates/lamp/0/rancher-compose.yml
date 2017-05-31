@@ -1,0 +1,32 @@
+.catalog:
+  name: "NGINX + PHP-FPM"
+  version: 1.0
+  description: |
+    NGINX and PHP-FPM
+  questions:
+    - variable: "MYSQL_ROOT_PASSWORD"
+      type: string
+      required: true
+      label: "MYSQL ROOT PASSWORD"
+      description: "Password given to the root mysql user"
+    - variable: "MYSQL_DATABASE"
+      type: string
+      required: true
+      label: "MYSQL DATABASE"
+      description: "MySQL database to create"
+    - variable: "MYSQL_USER"
+      type: string
+      required: true
+      description: "MySQL user for the created database"
+      label: "MYSQL DB USER"
+    - variable: "MYSQL PASSWORD"
+      type: string
+      required: true
+      label: "MYSQL DB PASSWORD"
+      description: "Password for the MySQL user of the created database"
+    - variable: "MYSQL_HOST"
+      type: string
+      required: true
+      label: "MYSQL_HOST"
+      default:  "MySQL-db-1"
+      description: "MYSQl DB HOST"
