@@ -25,5 +25,9 @@ COPY .build/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
 COPY .build/error.ini /usr/local/etc/php/conf.d/errors.ini
 COPY .build/www.conf /usr/local/etc/php-fpm.d/www.conf
 
-
 WORKDIR /var/www/html
+
+ADD start.sh /usr/bin/
+RUN chmod +x /usr/bin/start.sh
+
+CMD ["/bin/bash", "/usr/bin/start.sh"]

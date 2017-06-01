@@ -33,4 +33,4 @@
         internal;
     }
 
-    include /etc/nginx/custom.d/redirects.inc;
+#    include /etc/nginx/conf.d/redirects.inc;

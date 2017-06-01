@@ -5,14 +5,6 @@ mysql -uroot -p${MYSQL_ROOT_PASSWORD} -h ${MYSQL_HOST} -e "CREATE DATABASE IF NO
 
 case "${ContainerType}" in
 service)
-
-    php /var/www/drakeroll.com/bin/console d:s:u --force && \
-    php /var/www/drakeroll.com/bin/console d:f:l --append && \
-    php /var/www/drakeroll.com/bin/console swagger:export web/public/ -e dev --force && \
-    chmod -R 0777 /var/www/drakeroll.com/var/cache/ && \
-    chmod -R 0777 /var/www/drakeroll.com/var/logs/ && \
-    chmod -R 0777 /var/www/drakeroll.com/web/public/swagger.json && \
-    rm -Rf /var/www/drakeroll.com/var/cache/*
     /usr/local/sbin/php-fpm -y /usr/local/etc/php-fpm.conf
     ;;
 scheduler)
