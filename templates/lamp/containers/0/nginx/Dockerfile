@@ -11,6 +11,8 @@ ADD nginx.conf /etc/nginx/
 ADD sites-enabled/sites.conf /etc/nginx/sites-enabled/
 
 RUN rm /etc/nginx/sites-enabled/default
+COPY custom.d /etc/nginx/custom.d
+COPY conf.d/ /etc/nginx/conf.d/
 
 RUN echo "upstream php-upstream { server php:9000; }" > /etc/nginx/conf.d/upstream.conf
 
